@@ -1,0 +1,515 @@
+/* ==========================================================
+   GÜLSÜM & ZEKERİYA — Düğün Davetiyesi (Güncellenmiş)
+   ========================================================== */
+
+:root{
+  --ivory:#FFFDF8;
+  --ivory-2:#FBF6EE;
+  --ink:#4B5259;
+  --ink-soft:#8B9299;
+  --accent:#7E9DB6;
+  --accent-soft:#CBDCE7;
+  --seal:#6E8FAE;
+  --leaf:#93AE8C;
+
+  --font-display: 'Playfair Display', serif;
+  --font-script: 'Great Vibes', cursive;
+  --font-body: 'Montserrat', sans-serif;
+
+  /* responsive hero height fallback */
+  --vh: 1vh;
+}
+
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+html{ scroll-behavior:smooth; }
+
+body{
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--ivory);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
+}
+
+img{ max-width:100%; display:block; }
+
+/* ==========================================================
+   ZARF (ENVELOPE) INTRO
+   ========================================================== */
+#envelope-overlay{
+  position:fixed; inset:0; z-index:999;
+  display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(180deg, #FFFFFF, var(--ivory-2));
+  transition: opacity 1s ease 0.9s, visibility 1s ease 0.9s;
+}
+#envelope-overlay.hide{
+  opacity:0; visibility:hidden; pointer-events:none;
+}
+
+.envelope{
+  position:relative;
+  width:min(78vw, 320px);
+  aspect-ratio: 3 / 2;
+  filter: drop-shadow(0 18px 30px rgba(60,40,20,0.25));
+}
+
+.envelope-back{
+  position:absolute; inset:0;
+  background: var(--ivory-2);
+  border:1px solid var(--accent-soft);
+  border-radius:4px;
+}
+
+.envelope-letter{
+  position:absolute;
+  left:8%; right:8%; bottom:6%;
+  height:78%;
+  background: var(--ivory);
+  border:1px solid var(--accent-soft);
+  border-radius:2px;
+  display:flex; align-items:center; justify-content:center;
+  transform: translateY(6%);
+  transition: transform 1s cubic-bezier(.4,0,.2,1) 0.4s;
+  z-index:1;
+}
+.letter-monogram{
+  font-family: var(--font-script);
+  font-size: clamp(1.6rem, 6vw, 2.4rem);
+  color: var(--accent);
+}
+.letter-monogram span{ color: var(--seal); padding:0 4px; }
+
+.envelope-flap{
+  position:absolute; top:0; left:0; right:0;
+  height:0;
+  border-left: calc(min(78vw,320px)/2) solid transparent;
+  border-right: calc(min(78vw,320px)/2) solid transparent;
+  border-top: calc(min(78vw,320px)*0.42) solid var(--ivory-2);
+  filter: brightness(0.96);
+  transform-origin: top center;
+  transition: transform 1s cubic-bezier(.4,0,.2,1);
+  z-index:2;
+}
+
+.envelope-seal{
+  position:absolute;
+  top: calc(min(78vw,320px)*0.30);
+  left:50%;
+  transform: translate(-50%, -50%);
+  width:44px; height:44px;
+  border-radius:50%;
+  background: radial-gradient(circle at 35% 30%, var(--seal), #48617d);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  z-index:3;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  font-family: var(--font-display);
+  color: var(--ivory);
+  font-size:0.85rem;
+  letter-spacing:1px;
+}
+
+/* Açılma animasyonu */
+.envelope.open .envelope-flap{
+  transform: rotateX(180deg);
+}
+.envelope.open .envelope-seal{
+  opacity:0;
+  transform: translate(-50%,-50%) scale(0.4);
+}
+.envelope.open .envelope-letter{
+  transform: translateY(-38%);
+}
+.seal-note{
+  position: absolute;
+  top: calc(min(78vw, 320px)*0.42);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  color: var(--ink-light);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  z-index: 3;
+}
+
+/* ==========================================================
+   HERO
+   ========================================================== */
+.hero{
+  position:relative;
+  /* mobil tarayıcı çubuğu yüksekliğine karşı güvenli çözüm */
+  height: calc(var(--vh, 1vh) * 100);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  overflow:hidden;
+  text-align:center;
+  padding: clamp(2.2rem, 6vw, 6rem) 1.2rem clamp(2rem, 6vw, 4rem);
+}
+
+/* Arka plan: contain yerine center/cover kombinasyonu ve max-width ile görselin taşmasını engelleme.
+   Önemli: görselin önemli kısmı ortadaysa center top tercih edilebilir. */
+.hero-bg{
+  position:absolute; inset:0; z-index:0;
+  background-color: var(--ivory);
+  background-image: url('images/hero-bg.jpg');
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: cover;
+  opacity: 0.95;
+  filter: saturate(0.98) contrast(0.98);
+  /* görselin çok büyük ekranlarda aşırı yayılmasını sınırlamak için pseudo-layer kullanmak yerine
+     bir overlay ile görselin görünürlüğünü kontrol ediyoruz */
+}
+
+/* İçeriğin genişliğini sınırlayıp ortalıyoruz */
+.hero-content{
+  position:relative; z-index:3;
+  width: min(92%, 920px);
+  max-width: 920px;
+  margin-inline:auto;
+  padding: 0 1rem;
+  box-sizing:border-box;
+}
+
+/* Yazıların çok yayılmasını engellemek için max-width ve satır yüksekliği */
+.hero-names{
+  font-family: var(--font-script);
+  font-weight:400;
+  font-size: clamp(2.2rem, 9vw, 3.4rem);
+  color: var(--ink);
+  line-height:1.05;
+  max-width: 90ch;
+  margin: 0 auto;
+  word-break: keep-all;
+  white-space: normal;
+}
+.hero-names .ve{
+  font-family: var(--font-display);
+  font-style:italic;
+  font-size:0.5em;
+  color: var(--ink-soft);
+  padding:0 0.15em;
+  vertical-align:middle;
+}
+.amp{ font-family: var(--font-script); color: var(--accent); padding:0 0.15em; font-size:1.15em; }
+
+.hero-marrying{
+  font-family: var(--font-display);
+  font-weight:500;
+  letter-spacing:0.32em;
+  text-transform:uppercase;
+  font-size: clamp(0.85rem, 2.6vw, 1.05rem);
+  color: var(--accent);
+  margin-top:0.6rem;
+}
+
+.date-box{
+  margin-top:1.6rem;
+  display:flex; align-items:center; justify-content:center;
+  gap: clamp(0.5rem, 2.4vw, 0.9rem);
+  flex-wrap:wrap;
+}
+.date-month, .date-year{
+  font-family: var(--font-body);
+  font-size:1.0rem;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color: var(--accent);
+}
+.date-day{
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 7vw, 2.9rem);
+  font-weight:400;
+  margin-bottom: 1.2rem;
+  margin-right: 0.5rem;
+  color: var(--ink);
+  line-height:1;
+}
+.date-rule{
+  width:26px; height:1px;
+  background: var(--accent-soft);
+}
+.date-weekday{
+  margin-top:0.8rem;
+  margin-left: 1.0rem;
+  font-size:0.9rem;
+  letter-spacing:0.24em;
+  text-transform:uppercase;
+  color: var(--ink-soft);
+}
+
+.scroll-cue{
+  position:absolute; bottom:2rem; left:50%; transform:translateX(-50%);
+  z-index:3;
+  display:flex; flex-direction:column; align-items:center; gap:0.4rem;
+  color: #000;
+  text-decoration:none;
+  font-size:0.90rem;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  animation: bob 2.4s ease-in-out infinite;
+}
+.scroll-cue svg{ width:18px; height:18px; }
+@keyframes bob{
+  0%,100%{ transform:translate(-50%,0); }
+  50%{ transform:translate(-50%,8px); }
+}
+
+/* ==========================================================
+   WELCOME (beyaz alan)
+   ========================================================== */
+.welcome{
+  background: var(--ivory);
+  padding: 5rem 1.5rem;
+  text-align:center;
+}
+.welcome-text{
+  font-family: var(--font-display);
+  font-style:italic;
+  font-size: clamp(1.15rem, 3.6vw, 1.6rem);
+  color: var(--ink);
+  line-height:1.6;
+  max-width:560px;
+  margin:0 auto;
+}
+.welcome-sub{
+  margin-top:1.1rem;
+  font-size:0.78rem;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color: var(--accent);
+}
+
+/* ==========================================================
+   COUNTDOWN
+   ========================================================== */
+.countdown{
+  position:relative;
+  padding: 4.5rem 1.5rem;
+  overflow:hidden;
+  text-align:center;
+  color: var(--ink);
+}
+.countdown-bg{
+  position:absolute; inset:0; z-index:0;
+  background:
+    /*linear-gradient(rgba(255,253,248,0.5), rgba(255,253,248,0.5)),*/
+    var(--ivory) url('images/hero-bg.jpg') center bottom / cover no-repeat;
+}
+.countdown .bird{ color: rgba(255,255,255,0.55); }
+
+.countdown-content{ position:relative; z-index:2; }
+
+.section-title{
+  font-family: var(--font-script);
+  font-weight:500;
+  font-size: clamp(3rem, 7vw, 3.8rem);
+  letter-spacing:0.04em;
+  color: #37353E;
+}
+.section-title.light{ color: var(--ivory); }
+
+.countdown-date{
+  margin-top: 0.6rem;
+  font-size: 1.3rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #37353E;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8);
+}
+
+.timer{
+  margin-top:2.2rem;
+  display:flex;
+  justify-content:center;
+  gap: clamp(0.6rem, 3vw, 1.4rem);
+  flex-wrap:wrap;
+}
+.timer-box{
+  background: rgba(255,255,255,0.75);
+  border: 1px solid var(--accent-soft);
+  backdrop-filter: blur(2px);
+  border-radius:8px;
+  width: clamp(64px, 18vw, 86px);
+  padding: 0.9rem 0.4rem;
+  display:flex; flex-direction:column; align-items:center; gap:0.3rem;
+}
+.timer-num{
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 5vw, 1.9rem);
+  font-weight:600;
+  color: var(--ink);
+}
+.timer-label{
+  font-size:0.62rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color: var(--ink-soft);
+}
+
+/* ==========================================================
+   DETAILS / NE ZAMAN & NEREDE
+   ========================================================== */
+.details{
+  background: var(--ivory);
+  padding: 5rem 1.5rem 5.5rem;
+  text-align:center;
+}
+.details .section-title{ margin-bottom:2.4rem; }
+
+.invite-card{
+  max-width:420px;
+  margin:0 auto;
+  background: var(--ivory-2);
+  border: 1px solid var(--accent-soft);
+  border-radius:6px;
+  padding: 2.4rem 1.8rem 2.2rem;
+  position:relative;
+}
+.invite-card::before{
+  content:'';
+  position:absolute; inset:8px;
+  border: 1px solid rgba(192,154,93,0.35);
+  border-radius:4px;
+  pointer-events:none;
+}
+.invite-card-ornament{ width:120px; margin:0 auto 1rem; color: var(--accent); }
+.invite-card-ornament svg{ width:100%; height:auto; }
+
+.invite-title{
+  font-family: var(--font-script);
+  font-size: clamp(2rem, 7vw, 2.6rem);
+  color: var(--accent);
+}
+.invite-line{
+  margin-top:0.55rem;
+  font-size:0.92rem;
+  color: var(--ink-soft);
+  line-height:1.5;
+}
+.invite-date{ font-weight:600; color: var(--ink); letter-spacing:0.03em; }
+.invite-time{ letter-spacing:0.08em; }
+.invite-venue{ font-family: var(--font-display); font-style:italic; color: var(--ink); margin-top:0.9rem; font-size:1.02rem; }
+.invite-address{ font-size:0.8rem; max-width:320px; margin-left:auto; margin-right:auto; }
+
+.direction-btn{
+  margin-top:1.6rem;
+  display:inline-flex; align-items:center; gap:0.5rem;
+  padding:0.75rem 1.6rem;
+  border-radius:30px;
+  border:1px solid var(--accent);
+  color: var(--accent);
+  text-decoration:none;
+  font-size:0.78rem;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+.direction-btn svg{ width:16px; height:16px; }
+.direction-btn:hover{ background: var(--accent); color: var(--ivory); }
+
+/* ==========================================================
+   GALLERY
+   ========================================================== */
+.gallery{
+  background: var(--ivory-2);
+  padding: 4.5rem 1.5rem 5rem;
+  text-align:center;
+}
+.gallery .section-title{ margin-bottom:2rem; }
+.gallery-single{
+  max-width:380px;
+  margin:0 auto;
+  aspect-ratio: 4/5;
+  overflow:hidden;
+  border-radius: 6px 6px 60px 60px / 6px 6px 90px 90px;
+  border: 1px solid var(--accent-soft);
+  background: var(--ivory);
+  padding:10px;
+  box-shadow: 0 12px 26px rgba(80,70,50,0.12);
+}
+.gallery-single img{
+  width:100%; height:100%; object-fit:cover;
+  border-radius: 2px 2px 52px 52px / 2px 2px 80px 80px;
+}
+
+/* ==========================================================
+   FOOTER
+   ========================================================== */
+.site-footer{
+  background: var(--ivory);
+  text-align:center;
+  padding: 3.2rem 1.5rem 2.6rem;
+  border-top: 1px solid var(--accent-soft);
+}
+.footer-names{
+  font-family: var(--font-display);
+  letter-spacing:0.14em;
+  font-size: clamp(1.1rem, 4vw, 1.4rem);
+  color: var(--ink);
+}
+.footer-date{
+  margin-top:0.4rem;
+  font-size:0.78rem;
+  letter-spacing:0.16em;
+  color: var(--ink-soft);
+}
+.footer-note{
+  margin-top:0.8rem;
+  font-family: var(--font-script);
+  font-size:1.3rem;
+  color: var(--accent);
+}
+
+/* ==========================================================
+   MEDYA SORGULARI: Mobilde içerik taşmasını engelle ve okunabilirliği artır
+   ========================================================== */
+@media (max-width: 720px){
+
+  .hero{
+    padding: 2.2rem 1rem 2.6rem;
+  }
+
+  .hero-names{
+    font-size: clamp(1.9rem, 9.5vw, 2.8rem);
+  }
+
+  .date-day{
+    font-size: clamp(1.8rem, 9vw, 2.4rem);
+  }
+
+  .scroll-cue{
+    bottom: 1.8rem;
+    font-size: 0.75rem;
+  }
+
+  .countdown-date{
+    font-size: 0.95rem;
+  }
+
+  .section-title{
+    font-size: 2.8rem;
+  }
+
+  .date-month,
+  .date-year,
+  .date-weekday{
+    font-size: 0.8rem;
+  }
+
+  .hero-bg{
+    background-position: center top;
+    background-size: cover;
+  }
+  .seal-note{
+    width: 100%;
+    text-align: center;
+    font-size: 0.65rem;
+  }
+}
+
